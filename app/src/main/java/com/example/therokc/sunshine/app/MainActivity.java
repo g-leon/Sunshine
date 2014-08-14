@@ -8,10 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.example.therokc.sunshine.app.R.id.listview_forecast;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -19,8 +24,10 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		if (savedInstanceState == null) {
+
+        setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction()
 			                           .add(R.id.container, new PlaceholderFragment())
 			                           .commit();
@@ -52,6 +59,8 @@ public class MainActivity extends ActionBarActivity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
+		private ArrayAdapter<String> mForecastAdapter;
+
 		public PlaceholderFragment() {
 		}
 
@@ -68,8 +77,11 @@ public class MainActivity extends ActionBarActivity {
 					"Sat - HELP TRAPED IN WEATHERSTATION - 60/51",
 					"Sun - Sunny - 80/68"
 			};
-
 			List<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
+
+			mForecastAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, weekForecast);
+			ListView listView = (ListView) rootView.findViewById(listview_forecast);
+            listView.setAdapter(mForecastAdapter);
 
 			return rootView;
 		}
