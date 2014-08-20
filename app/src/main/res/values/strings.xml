@@ -14,7 +14,7 @@
 	<string name="pref_location_label">Location</string>
 
 	<!-- Key name for storing location in SharedPreferences -->
-	<string name="pref_location_string" translatable="false">location</string>
+	<string name="pref_location_key" translatable="false">location</string>
 
 	<!-- Default postal code for location preferences -->
 	<string name="pref_location_default" translatable="false">94043</string>
