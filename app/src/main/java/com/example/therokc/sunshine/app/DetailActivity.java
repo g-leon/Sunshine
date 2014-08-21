@@ -49,9 +49,7 @@ public class DetailActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
+
 	public static class DetailFragment extends Fragment {
 
 		private static final String LOG_TAG = DetailFragment.class.getSimpleName();
