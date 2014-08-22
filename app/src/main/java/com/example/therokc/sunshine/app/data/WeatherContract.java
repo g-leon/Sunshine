@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
  */
 public class WeatherContract {
 
-	public static final String CONTENT_AUTHORITY = "com.example.android.sunshine.app";
+	public static final String CONTENT_AUTHORITY = "com.example.therokc.sunshine.app";
 
 	// Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
 	// the content provider.
@@ -50,6 +50,10 @@ public class WeatherContract {
 		// map intent, we store the latitude and longitude as returned by openweathermap.
 		public static final String COLUMN_COORD_LAT = "coord_lat";
 		public static final String COLUMN_COORD_LONG = "coord_long";
+
+		public static Uri buildLocationUri(long id) {
+			return ContentUris.withAppendedId(CONTENT_URI, id);
+		}
 	}
 
 
