@@ -105,7 +105,6 @@ public class TestProvider extends AndroidTestCase {
 		testValues.put(LocationEntry.COLUMN_CITY_NAME, "North Pole");
 		testValues.put(LocationEntry.COLUMN_COORD_LAT, 64.7488);
 		testValues.put(LocationEntry.COLUMN_COORD_LONG, -147.353);
-
 		return testValues;
 	}
 
