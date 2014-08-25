@@ -28,7 +28,6 @@ public class TestDb extends AndroidTestCase {
 	}
 
 	public void testInsertReadDb() {
-
 		// If there's an error in those massive SQL table creation Strings,
 		// errors will be thrown here when you try to get a writable database.
 		WeatherDbHelper dbHelper = new WeatherDbHelper(mContext);
@@ -93,7 +92,6 @@ public class TestDb extends AndroidTestCase {
 		weatherValues.put(WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
 		weatherValues.put(WeatherEntry.COLUMN_WIND_SPEED, 5.5);
 		weatherValues.put(WeatherEntry.COLUMN_WEATHER_ID, 321);
-
 		return weatherValues;
 	}
 
@@ -104,7 +102,6 @@ public class TestDb extends AndroidTestCase {
 		testValues.put(LocationEntry.COLUMN_CITY_NAME, "North Pole");
 		testValues.put(LocationEntry.COLUMN_COORD_LAT, 64.7488);
 		testValues.put(LocationEntry.COLUMN_COORD_LONG, -147.353);
-
 		return testValues;
 	}
 

@@ -1,12 +1,13 @@
 package com.example.therokc.sunshine.app;
 
 import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Build;
 import android.test.AndroidTestCase;
-import android.util.Log;
 
 import com.example.therokc.sunshine.app.data.WeatherContract.LocationEntry;
 import com.example.therokc.sunshine.app.data.WeatherContract.WeatherEntry;
@@ -29,12 +30,11 @@ public class TestProvider extends AndroidTestCase {
 
 		ContentValues testValues = TestDb.createNorthPoleLocationValues();
 
-		long locationRowId;
-		locationRowId = db.insert(LocationEntry.TABLE_NAME, null, testValues);
+		Uri locationUri = mContext.getContentResolver().insert(LocationEntry.CONTENT_URI, testValues);
+		long locationRowId = ContentUris.parseId(locationUri);
 
 		// Verify we got a row back.
 		assertTrue(locationRowId != -1);
-		Log.d(LOG_TAG, "New row id: " + locationRowId);
 
 		// Data's inserted. IN THEORY. Now pull some out to stare at it and verify it made
 		// the round trip.
@@ -62,8 +62,9 @@ public class TestProvider extends AndroidTestCase {
 		// Fantastic. Now that we have a location, add some weather!
 		ContentValues weatherValues = TestDb.createWeatherValues(locationRowId);
 
-		long weatherRowId = db.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
-		assertTrue(weatherRowId != -1);
+		Uri weatherInsertUri = mContext.getContentResolver().insert(WeatherEntry.CONTENT_URI, weatherValues);
+		assertTrue(weatherInsertUri != null);
+
 
 		// A cursor is your primary interface to the query results.
 		Cursor weatherCursor = mContext.getContentResolver().query(
