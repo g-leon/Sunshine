@@ -42,6 +42,22 @@ public class WeatherContract {
 		return sdf.format(date);
 	}
 
+	/**
+	 * Converts a dateText to a long Unix time representation
+	 * @param dateText the input date string
+	 * @return the Date object
+	 */
+	public static Date getDateFromDb(String dateText) {
+		SimpleDateFormat dbDateFormat = new SimpleDateFormat(DATE_FORMAT);
+		try {
+			return dbDateFormat.parse(dateText);
+		} catch (java.text.ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+
 	/* Inner class that defines the table contents of the location table */
 	public static final class LocationEntry implements BaseColumns {
 
