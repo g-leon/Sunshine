@@ -1,12 +1,17 @@
 package com.example.therokc.sunshine.app;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+
+import com.example.therokc.sunshine.app.data.WeatherContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +26,6 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
 public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
 	private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -34,7 +38,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 		mForecastAdapter = forecastAdapter;
 	}
 
-	/* The date/time conversion code is going to be moved outside the asynctask later,
+	/**
+	The date/time conversion code is going to be moved outside the asynctask later,
 	* so for convenience we're breaking it out into its own method now.
 	*/
 	private String getReadableDateString(long time){
@@ -71,6 +76,45 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
 		String highLowStr = roundedHigh + "/" + roundedLow;
 		return highLowStr;
+	}
+
+	/**
+	 * Helper method to handle insertion of a new location in the weather database.
+	 *
+	 * @param locationSetting The location string used to request updates from the server.
+	 * @param cityName A human-readable city name, e.g "Mountain View"
+	 * @param lat the latitude of the city
+	 * @param lon the longitude of the city
+	 * @return the row ID of the added location.
+	 */
+	private long addLocation(String locationSetting, String cityName, double lat, double lon) {
+		Log.v(LOG_TAG, "inserting " + cityName + ", with coord: " + lat + ", " + lon);
+
+		// First, check if the location with this city name exists in the db
+		Cursor cursor = mContext.getContentResolver().query(
+				WeatherContract.LocationEntry.CONTENT_URI,
+				new String[]{WeatherContract.LocationEntry._ID},
+				WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
+				new String[]{locationSetting},
+				null);
+
+		if (cursor.moveToFirst()) {
+			Log.v(LOG_TAG, "Found it in the database!");
+			int locationIdIndex = cursor.getColumnIndex(WeatherContract.LocationEntry._ID);
+			return cursor.getLong(locationIdIndex);
+		} else {
+			Log.v(LOG_TAG, "Didn't find it in the database, inserting now!");
+			ContentValues locationValues = new ContentValues();
+			locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+			locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
+			locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
+			locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
+
+			Uri locationInsertUri = mContext.getContentResolver()
+			                                .insert(WeatherContract.LocationEntry.CONTENT_URI, locationValues);
+
+			return ContentUris.parseId(locationInsertUri);
+		}
 	}
 
 	/**
@@ -119,8 +163,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 		Log.v(LOG_TAG, cityName + ", with coord: " + cityLatitude + " " + cityLongitude);
 
 		// Insert the location into the database.
-		// The function referenced here is not yet implemented, so we've commented it out for now.
-		// long locationID = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
+		long locationID = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
+
 		String[] resultStrs = new String[numDays];
 		for(int i = 0; i < weatherArray.length(); i++) {
 			// For now, using the format "Day, description, hi/low"
@@ -128,7 +172,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 			String description;
 			String highAndLow;
 
-				// Get the JSON object representing the day
+			// Get the JSON object representing the day
 			JSONObject dayForecast = weatherArray.getJSONObject(i);
 
 			// The date/time is returned as a long. We need to convert that
@@ -161,6 +205,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 		}
 
 		String locationQuery = params[0];
+
 		// These two need to be declared outside the try/catch
 		// so that they can be closed in the finally block.
 		HttpURLConnection urlConnection = null;
