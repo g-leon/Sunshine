@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.therokc.sunshine.app.data.WeatherContract;
 import com.example.therokc.sunshine.app.data.WeatherContract.LocationEntry;
@@ -30,7 +28,9 @@ import static com.example.therokc.sunshine.app.R.id.listview_forecast;
 public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final int FORECAST_LOADER = 0;
+
 	private String mLocation;
+	private ForecastAdapter mForecastAdapter;
 
 	// For the forecast view we're showing only a small subset of the stored data.
 	// Specify the columns we need.
@@ -57,8 +57,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 	public static final int COL_WEATHER_MAX_TEMP = 3;
 	public static final int COL_WEATHER_MIN_TEMP = 4;
 	public static final int COL_LOCATION_SETTING = 5;
-
-	private SimpleCursorAdapter mForecastAdapter;
 
 	public ForecastFragment() {
 	}
@@ -88,50 +86,13 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-		// The SimpleCursorAdapter will take data from the database through the
-		// Loader and use it to populate the ListView it's attached to.
-		mForecastAdapter = new SimpleCursorAdapter(
-				getActivity(),
-				R.layout.list_item_forecast,
-				null,
-				// the column names to use to fill the textviews
-				new String[]{WeatherEntry.COLUMN_DATETEXT,
-				             WeatherEntry.COLUMN_SHORT_DESC,
-				             WeatherEntry.COLUMN_MAX_TEMP,
-				             WeatherEntry.COLUMN_MIN_TEMP
-				},
-				// the textviews to fill with the data pulled from the columns above
-				new int[]{R.id.list_item_date_textview,
-				          R.id.list_item_forecast_textview,
-				          R.id.list_item_high_textview,
-				          R.id.list_item_low_textview
-				},
-				0
-		);
+		// Create our own custom adapter. Unlike with the SimpleCursorAdapter there's no need to define
+		// which database columns it will be mapping or accessing. That's all handled in the Adapter's implementation
+		mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
-		mForecastAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-			@Override
-			public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-				boolean isMetric = Utility.isMetric(getActivity());
-				switch (columnIndex) {
-					case COL_WEATHER_MAX_TEMP:
-					case COL_WEATHER_MIN_TEMP: {
-						// we have to do some formatting and possibly a conversion
-						((TextView) view).setText(Utility.formatTemperature(cursor.getDouble(columnIndex), isMetric));
-						return true;
-					}
-					case COL_WEATHER_DATE: {
-						String dateString = cursor.getString(columnIndex);
-						TextView dateView = (TextView) view;
-						dateView.setText(Utility.formatDate(dateString));
-						return true;
-					}
-				}
-				return false;
-			}
-		});
-
+		// Find the ListView displaying the forecast, and attach the forecast adapter.
 		ListView listView = (ListView) rootView.findViewById(listview_forecast);
+
 		listView.setAdapter(mForecastAdapter);
 		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
