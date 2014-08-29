@@ -107,10 +107,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 		mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
 		// Find the ListView displaying the forecast, and attach the forecast adapter.
-		ListView listView = (ListView) rootView.findViewById(listview_forecast);
-
-		listView.setAdapter(mForecastAdapter);
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		mListView = (ListView) rootView.findViewById(listview_forecast);
+		mListView.setAdapter(mForecastAdapter);
+		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
 				Cursor cursor = mForecastAdapter.getCursor();
