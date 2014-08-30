@@ -185,6 +185,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 			String description = data.getString(data.getColumnIndex(WeatherEntry.COLUMN_SHORT_DESC));
 			mDescriptionView.setText(description);
 
+			// Add a content description to the art icon for accessibility
+			mIconView.setContentDescription(description);
+
 			// Read high temperature from cursor and update view
 			boolean isMetric = Utility.isMetric(getActivity());
 			double high = data.getDouble(data.getColumnIndex(WeatherEntry.COLUMN_MAX_TEMP));
