@@ -10,6 +10,7 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 import com.example.therokc.sunshine.app.data.WeatherContract;
+import com.example.therokc.sunshine.app.sync.SunshineSyncAdapter;
 
 
 /**
@@ -51,7 +52,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 		// Trigger the listener immediately with the preference's
 		// current value.
 		onPreferenceChange(preference, PreferenceManager.getDefaultSharedPreferences(preference.getContext())
-				                                        .getString(preference.getKey(), ""));
+		                                                .getString(preference.getKey(), ""));
 
 		mBindingPreference = false;
 	}
@@ -63,9 +64,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 		// Are we starting the preference activity?
 		if (!mBindingPreference) {
 			if (preference.getKey().equals(getString(R.string.pref_location_key))) {
-				FetchWeatherTask weatherTask = new FetchWeatherTask(this);
-				String location = value.toString();
-				weatherTask.execute(location);
+				SunshineSyncAdapter.syncImmediately(this);
 			} else {
 				// Notify code that weather may be impacted
 				getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);

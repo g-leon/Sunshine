@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.therokc.sunshine.app.sync.SunshineSyncAdapter;
+
 
 public class MainActivity extends ActionBarActivity implements ForecastFragment.Callback {
 
@@ -42,6 +44,11 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
 
 		ForecastFragment forecastFragment = ((ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast));
 		forecastFragment.setUseTodayLayout(!mTwoPane);
+
+		// The OpenWeather API update the data every 3 hours.
+		// Since we are automate the data loading, a periodic sync is scheduled and every 3 hours
+		// the data is retrieved.
+		SunshineSyncAdapter.initializeSyncAdapter(this);
 	}
 
 
@@ -98,7 +105,7 @@ public class MainActivity extends ActionBarActivity implements ForecastFragment.
 			                           .replace(R.id.weather_detail_container, fragment)
 			                           .commit();
 		} else {
-			Intent intent = new Intent(this, DetailActivity.class)  .putExtra(DetailActivity.DATE_KEY, date);
+			Intent intent = new Intent(this, DetailActivity.class).putExtra(DetailActivity.DATE_KEY, date);
 			startActivity(intent);
 		}
 	}
